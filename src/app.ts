@@ -1,14 +1,14 @@
 // src/app.ts
-import express, { Express, Request, Response } from 'express'
+import express, { Express, Request, Response } from 'express';
 
-const app: Express = express()
+const app: Express = express();
 
-const port: number = 3000
+const port: number = 3000;
 
 app.get('/', (req: Request, res: Response) => {
   res.json({
     message: 'Hello Express + TypeScirpt!!',
-  })
-})
+  });
+});
 
-app.listen(port, () => console.log(`Application is running on port ${port}`))
+app.listen(port, () => console.log(`Application is running on port ${port}`));
