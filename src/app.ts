@@ -1,14 +1,10 @@
-// src/app.ts
 import express, { Express, Request, Response } from 'express';
-
 const app: Express = express();
 
-const port: number = 3000;
+// discord
+import discord from './configs/discord';
+import { ready, interactionCreate } from './controllers/discord';
+ready(discord);
+interactionCreate(discord);
 
-app.get('/', (req: Request, res: Response) => {
-  res.json({
-    message: 'Hello Express + TypeScirpt!!',
-  });
-});
-
-app.listen(port, () => console.log(`Application is running on port ${port}`));
+export default app;
