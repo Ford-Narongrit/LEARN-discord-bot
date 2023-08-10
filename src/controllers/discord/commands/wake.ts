@@ -60,7 +60,9 @@ export const Wake: Command = {
       }
 
       // send vote message
-      const message = await interaction.channel.send('React to this message to vote for the command.');
+      const message = await interaction.channel.send(
+        `React to this message to vote for do command. need 👍 ${members_count / 2 + 1} votes.`,
+      );
 
       let voteAccept = 0;
       message.react('👍');
