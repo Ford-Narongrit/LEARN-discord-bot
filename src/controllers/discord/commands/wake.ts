@@ -76,7 +76,6 @@ export const Wake: Command = {
 
       // collect vote event
       collector.on('collect', async (reaction, user) => {
-        console.log(`Collected ${reaction.emoji.name} from ${user.tag}`);
         if (reaction.emoji.name === '👍') voteAccept++;
         if (reaction.emoji.name === '👎') voteReject++;
 
