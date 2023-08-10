@@ -7,6 +7,7 @@ const discord = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildMessageReactions
   ],
 });
 discord.login(process.env.DISCORD_TOKEN);
