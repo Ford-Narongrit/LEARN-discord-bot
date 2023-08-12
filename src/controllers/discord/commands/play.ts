@@ -1,13 +1,6 @@
 import * as Discord from 'discord.js';
 import { Command } from '../command';
-import ytdl from 'ytdl-core';
-import {
-  VoiceConnection,
-  joinVoiceChannel,
-  createAudioPlayer,
-  createAudioResource,
-  StreamType,
-} from '@discordjs/voice';
+import { player } from '../utils/player';
 
 export const Play: Command = {
   name: 'play',
@@ -35,30 +28,7 @@ export const Play: Command = {
       // Get options value.
       const url = interaction.options.get('url')?.value as string;
 
-      // init stream.
-      const stream = ytdl(url as string, {
-        filter: 'audioonly',
-        quality: 'highestaudio',
-      });
-
-      // create voice resource.
-      const resource = createAudioResource(stream, { inputType: StreamType.Arbitrary });
-
-      // join voice channel.
-      const connection = joinVoiceChannel({
-        channelId: commander.voice.channel.id,
-        guildId: interaction.guildId as string,
-        adapterCreator: interaction.guild.voiceAdapterCreator,
-      });
-
-      // play song.
-      const player = createAudioPlayer();
-      player.play(resource);
-      connection.subscribe(player);
-
-      player.on('error', (error) => {
-        console.error('Error:', error);
-      });
+      player(interaction, url, commander.voice.channel.id);
 
       const content = 'this is for play song';
       await interaction.followUp({
