@@ -1,6 +1,6 @@
 import * as Discord from 'discord.js';
-
 import { Command } from '../command';
+import { vote } from '../utils/vote';
 
 export const Wake: Command = {
   name: 'wake',
@@ -59,48 +59,13 @@ export const Wake: Command = {
         return;
       }
 
-      // send vote message
-      const message = await interaction.channel.send(
-        `React to this message to vote for do command. need 👍 ${members_count / 2 + 1} votes.`,
-      );
-
-      let voteAccept = 0;
-      message.react('👍');
-
-      let voteReject = 0;
-      message.react('👎');
-
-      const filter: any = (reaction: { emoji: { name: string } }, user: { id: string }) =>
-        (reaction.emoji.name === '👍' || reaction.emoji.name === '👎') && user.id !== client.user!.id;
-      const collector = message.createReactionCollector({ filter: filter, time: 10000 }); // vote timer 10 sec.
-
-      // collect vote event
-      collector.on('collect', async (reaction, user) => {
-        if (reaction.emoji.name === '👍') voteAccept++;
-        if (reaction.emoji.name === '👎') voteReject++;
-
-        if (voteAccept >= members_count / 2) {
-          await message.channel.send(`Enough votes received! Command unlocked. ${voteAccept}/${members_count}`);
-
-          // do command
-          for (let i = 0; i < number / 2; i++) {
-            await moveMemberTo(user_to_wake, to.id).then(async () => {
-              await moveMemberTo(user_to_wake, from.id);
-            });
-          }
+      vote(client, interaction, members_count, 10000, async () => {
+        // do command
+        for (let i = 0; i < number / 2; i++) {
+          await moveMemberTo(user_to_wake, to.id).then(async () => {
+            await moveMemberTo(user_to_wake, from.id);
+          });
         }
-        if (voteReject >= members_count / 2) {
-          await message.channel.send(`Not enough votes received! Command locked. ${voteAccept}/${members_count}`);
-        }
-      });
-
-      collector.on('end', async () => {
-        message.edit(`Voting has ended. Final vote count: 👍 = ${voteAccept}, 👎 = ${voteReject}`);
-        const content = 'Job done.';
-        await interaction.followUp({
-          ephemeral: true,
-          content,
-        });
       });
     } catch (error) {
       const content = 'error command.';
