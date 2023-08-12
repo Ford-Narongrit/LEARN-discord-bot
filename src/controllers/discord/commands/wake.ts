@@ -1,6 +1,7 @@
 import * as Discord from 'discord.js';
 import { Command } from '../command';
 import { vote } from '../utils/vote';
+import { move_to } from '../utils/move_to';
 
 export const Wake: Command = {
   name: 'wake',
@@ -62,8 +63,8 @@ export const Wake: Command = {
       vote(client, interaction, members_count, 10000, async () => {
         // do command
         for (let i = 0; i < number / 2; i++) {
-          await moveMemberTo(user_to_wake, to.id).then(async () => {
-            await moveMemberTo(user_to_wake, from.id);
+          await move_to(user_to_wake, to.id).then(async () => {
+            await move_to(user_to_wake, from.id);
           });
         }
       });
@@ -77,8 +78,3 @@ export const Wake: Command = {
     }
   },
 };
-
-async function moveMemberTo(member: Discord.GuildMember, channelID: string): Promise<Discord.GuildMember> {
-  if (!member.voice.channel) return member;
-  return member.voice.setChannel(channelID);
-}
