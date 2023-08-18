@@ -1,7 +1,10 @@
 import * as Discord from 'discord.js';
 import { Command } from '../command';
 import { vote } from '../services/vote';
-// import { player } from '../services/player';
+import * as player from '../services/player';
+import * as voice from '../services/voice';
+import * as metadata from '../services/metadata';
+
 import { move } from '../services/move';
 
 export const Adjudge: Command = {
@@ -30,6 +33,7 @@ export const Adjudge: Command = {
   ],
   run: async (client: Discord.Client, interaction: Discord.CommandInteraction) => {
     try {
+      let content = 'JUDGEMENT DAY!';
       // user that use command
       const commander: any = interaction.member;
       if (!commander) return;
@@ -42,7 +46,7 @@ export const Adjudge: Command = {
 
       // return missing options.
       if (!user || !channel_in || !url || !interaction.channel || !interaction.guild) {
-        const content = 'error command missing some options.';
+        content = 'error command missing some options.';
         await interaction.followUp({
           ephemeral: true,
           content,
@@ -53,11 +57,29 @@ export const Adjudge: Command = {
       vote(client, interaction, members_count, 10000, async () => {
         // move user to channel.
         const member = await move(user, channel_in.id);
+        await voice.join(channel_in);
+
         // play song.
-        // await player(interaction, url, channel_in.id);
+        const result = await metadata.query(url);
+        if (!result?.data) {
+          content = 'query video not found';
+          await interaction.followUp({
+            ephemeral: true,
+            content,
+          });
+          return;
+        }
+        if (!result.is_search) {
+          let item: metadata.PlayableItem | undefined;
+          if (Array.isArray(result.data)) {
+            item = result.data.shift();
+          } else {
+            item = result.data;
+          }
+          await player.play(item);
+        }
       });
 
-      const content = 'JUDGEMENT DAY!';
       await interaction.followUp({
         ephemeral: true,
         content,
