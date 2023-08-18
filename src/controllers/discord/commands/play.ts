@@ -1,36 +1,59 @@
 import * as Discord from 'discord.js';
 import { Command } from '../command';
-import { player } from '../utils/player';
+import * as voice from '../services/voice';
+import * as player from '../services/player';
+import * as queue from '../services/queue';
+import * as metadata from '../services/metadata';
 
 export const Play: Command = {
   name: 'play',
   description: 'play a song',
   options: [
     {
-      name: 'url',
-      description: 'youtube url',
+      name: 'query',
+      description: 'youtube url or search query',
       type: Discord.ApplicationCommandOptionType.String,
       required: true,
     },
   ],
   run: async (client: any, interaction: Discord.CommandInteraction) => {
     try {
+      let content = 'play command';
       // user that use command
       const commander: any = interaction.member;
       if (!commander?.voice.channel || !interaction.guild) {
-        const content = 'You must be in a voice channel to use this command.';
+        content = 'You must be in a voice channel to use this command.';
         return await interaction.followUp({
           ephemeral: true,
           content,
         });
       }
 
+      // join voice channel.
+      await voice.join(commander.voice.channel);
+
       // Get options value.
-      const url = interaction.options.get('url')?.value as string;
+      const query = interaction.options.get('query')?.value as string;
+      const result = await metadata.query(query);
 
-      player(interaction, url, commander.voice.channel.id);
+      if (!result?.data) {
+        content = 'query video not found';
+        await interaction.followUp({
+          ephemeral: true,
+          content,
+        });
+        return;
+      }
 
-      const content = 'this is for play song';
+      if (result.is_search) {
+        content = `is search result(s)`;
+      } else {
+        console.log(result);
+        content = `add to queue`;
+        queue.enqueue(result.data);
+        player.play(queue.dequeue());
+      }
+
       await interaction.followUp({
         ephemeral: true,
         content,

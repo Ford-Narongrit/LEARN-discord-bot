@@ -1,10 +1,10 @@
-import { CommandInteraction, Client } from 'discord.js';
+import * as Discord from 'discord.js';
 import { Command } from '../command';
 
 export const Hello: Command = {
   name: 'hello',
   description: 'Returns a greeting',
-  run: async (client: Client, interaction: CommandInteraction) => {
+  run: async (client: Discord.Client, interaction: Discord.CommandInteraction) => {
     const content = 'Hello there!';
 
     await interaction.followUp({

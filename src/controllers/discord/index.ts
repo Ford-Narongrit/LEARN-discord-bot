@@ -1,7 +1,12 @@
 import { CommandInteraction, Client, Interaction } from 'discord.js';
 import { Commands } from './commands';
 
-export function ready(client: Client): void {
+export async function init(client: Client): Promise<void> {
+  ready(client);
+  interactionCreate(client);
+}
+
+function ready(client: Client): void {
   client.on('ready', async () => {
     if (!client.user || !client.application) return;
 
@@ -11,7 +16,7 @@ export function ready(client: Client): void {
   });
 }
 
-export function interactionCreate(client: Client): void {
+function interactionCreate(client: Client): void {
   client.on('interactionCreate', async (interaction: Interaction) => {
     if (interaction.isCommand() || interaction.isContextMenuCommand()) {
       await handleSlashCommand(client, interaction);
@@ -19,7 +24,7 @@ export function interactionCreate(client: Client): void {
   });
 }
 
-const handleSlashCommand = async (client: Client, interaction: CommandInteraction): Promise<void> => {
+async function handleSlashCommand(client: Client, interaction: CommandInteraction): Promise<void> {
   const slashCommand = Commands.find((c) => c.name === interaction.commandName);
   if (!slashCommand) {
     interaction.followUp({ content: 'An error has occurred' });
@@ -27,6 +32,5 @@ const handleSlashCommand = async (client: Client, interaction: CommandInteractio
   }
 
   await interaction.deferReply();
-
   slashCommand.run(client, interaction);
-};
+}

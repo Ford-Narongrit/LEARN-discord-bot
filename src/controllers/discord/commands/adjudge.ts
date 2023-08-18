@@ -1,8 +1,8 @@
 import * as Discord from 'discord.js';
 import { Command } from '../command';
-import { vote } from '../utils/vote';
-import { player } from '../utils/player';
-import { move_to } from '../utils/move_to';
+import { vote } from '../services/vote';
+// import { player } from '../services/player';
+import { move } from '../services/move';
 
 export const Adjudge: Command = {
   name: 'adjudge',
@@ -52,9 +52,9 @@ export const Adjudge: Command = {
 
       vote(client, interaction, members_count, 10000, async () => {
         // move user to channel.
-        const member = await move_to(user, channel_in.id);
+        const member = await move(user, channel_in.id);
         // play song.
-        await player(interaction, url, channel_in.id);
+        // await player(interaction, url, channel_in.id);
       });
 
       const content = 'JUDGEMENT DAY!';
