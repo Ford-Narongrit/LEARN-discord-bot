@@ -19,6 +19,7 @@ export const Play: Command = {
   run: async (client: any, interaction: Discord.CommandInteraction) => {
     try {
       let content = 'play command';
+
       // user that use command
       const commander: any = interaction.member;
       if (!commander?.voice.channel || !interaction.guild) {
@@ -34,8 +35,9 @@ export const Play: Command = {
 
       // Get options value.
       const query = interaction.options.get('query')?.value as string;
-      const result = await metadata.query(query);
 
+      // query metadata.
+      const result = await metadata.query(query);
       if (!result?.data) {
         content = 'query video not found';
         await interaction.followUp({
@@ -47,11 +49,16 @@ export const Play: Command = {
 
       if (result.is_search) {
         content = `is search result(s)`;
+        // TODO add search result vote top 5 result.
       } else {
-        console.log(result);
-        content = `add to queue`;
-        queue.enqueue(result.data);
-        player.play(queue.dequeue());
+        if (Array.isArray(result.data)) {
+          if (queue.list().length === 0) {
+            const item = result.data.shift();
+            await player.play(item);
+          }
+          queue.enqueue(result.data);
+          content = `add to queue`;
+        }
       }
 
       await interaction.followUp({

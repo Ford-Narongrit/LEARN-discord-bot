@@ -9,7 +9,7 @@ export function enqueue(item: PlayableItem | PlayableItem[]) {
   } else {
     queue.push(item);
   }
-  console.log('added to queue', item);
+  console.log('queue', queue);
 }
 
 export function dequeue() {

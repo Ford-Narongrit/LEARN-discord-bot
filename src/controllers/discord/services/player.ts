@@ -6,7 +6,7 @@ import playDL from 'play-dl';
 let paused = false;
 let repeat = false;
 let loading = false;
-let playing: PlayableItem | undefined;
+let currentItem: PlayableItem | undefined;
 let discordPlayer: AudioPlayer;
 let audio: HTMLAudioElement | undefined;
 
@@ -16,40 +16,35 @@ export function init() {
   }
 
   // add listener
-  discordPlayer.on(AudioPlayerStatus.Idle, () => {
+  discordPlayer.on(AudioPlayerStatus.Idle, async () => {
     if (repeat) {
-      play(playing);
-    } else {
-      play(dequeue());
+      await play(currentItem);
+    } else if (!loading) {
+      await play(dequeue());
     }
   });
   return discordPlayer;
 }
 
 export async function play(item?: PlayableItem) {
-  if (discordPlayer.state.status === AudioPlayerStatus.Playing) {
-    console.log(`player is now playing ${playing?.title}`);
-    return;
-  }
-  if (discordPlayer.state.status === AudioPlayerStatus.Idle) {
-    if (item) {
-      try {
-        discordPlayer?.stop(true);
-        const stream = await playDL.stream(item.url);
-        const audioResource = createAudioResource(stream.stream, { inputType: stream.type });
-        discordPlayer.play(audioResource);
-        playing = item;
-        loading = false;
-        return true;
-      } catch (error) {
-        loading = false;
-        throw error;
-      }
-    } else {
-      audio?.play();
+  loading = true;
+  if (item) {
+    try {
+      discordPlayer?.stop(true);
+      const stream = await playDL.stream(item.url);
+      const audioResource = createAudioResource(stream.stream, { inputType: stream.type });
+      discordPlayer.play(audioResource);
+      currentItem = item;
       loading = false;
       return true;
+    } catch (error) {
+      loading = false;
+      throw error;
     }
+  } else {
+    audio?.play();
+    loading = false;
+    return true;
   }
 }
 
@@ -68,6 +63,6 @@ export function getRepeat() {
 export function setRepeat(value: boolean) {
   repeat = value;
 }
-export function getPlaying() {
-  return playing;
+export function getCurrentItem() {
+  return currentItem;
 }
