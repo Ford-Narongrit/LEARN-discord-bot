@@ -53,6 +53,11 @@ export function pause() {
   audio?.pause();
 }
 
+export function unpause() {
+  paused = false;
+  audio?.play();
+}
+
 export function isPaused() {
   return paused;
 }

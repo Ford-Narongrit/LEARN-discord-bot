@@ -51,14 +51,19 @@ export const Play: Command = {
         content = `is search result(s)`;
         // TODO add search result vote top 5 result.
       } else {
-        if (Array.isArray(result.data)) {
-          if (queue.list().length === 0) {
-            const item = result.data.shift();
-            await player.play(item);
+        if (queue.list().length === 0) {
+          let item: metadata.PlayableItem | undefined;
+          if (Array.isArray(result.data)) {
+            item = result.data.shift();
+            queue.enqueue(result.data);
+          } else {
+            item = result.data;
           }
+          await player.play(item);
+        } else {
           queue.enqueue(result.data);
-          content = `add to queue`;
         }
+        content = `add to queue`;
       }
 
       await interaction.followUp({
