@@ -3,8 +3,7 @@ const app: Express = express();
 
 // discord
 import discord from './configs/discord';
-import { ready, interactionCreate } from './controllers/discord';
-ready(discord);
-interactionCreate(discord);
+import { init } from './controllers/discord';
+init(discord);
 
 export default app;
