@@ -42,7 +42,7 @@ export async function vote(
     // vote end event
     collector.on('end', async () => {
       message.edit(`Voting has ended. Final vote count: 👍 = ${voteAccept}, 👎 = ${voteReject}`);
-      const content = 'Job done.';
+      const content = 'Time up, vote done.';
       await interaction.followUp({
         ephemeral: true,
         content,

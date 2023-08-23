@@ -21,6 +21,8 @@ export function init() {
       await play(currentItem);
     } else if (!loading) {
       await play(dequeue());
+    } else {
+      currentItem = undefined;
     }
   });
   return discordPlayer;

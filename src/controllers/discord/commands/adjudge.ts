@@ -4,6 +4,7 @@ import { vote } from '../services/vote';
 import * as player from '../services/player';
 import * as voice from '../services/voice';
 import * as metadata from '../services/metadata';
+import * as embed from '../services/embed';
 
 import { move } from '../services/move';
 
@@ -33,10 +34,16 @@ export const Adjudge: Command = {
   ],
   run: async (client: Discord.Client, interaction: Discord.CommandInteraction) => {
     try {
-      let content = 'JUDGEMENT DAY!';
       // user that use command
       const commander: any = interaction.member;
-      if (!commander) return;
+
+      if (!commander || !commander.voice.channel) {
+        await interaction.followUp({
+          ephemeral: true,
+          embeds: [embed.errorEmbed('Error', 'you need to in voice channel to use this command.', [])],
+        });
+        return;
+      }
 
       // Get options value.
       const user = interaction.options.getMember('user') as Discord.GuildMember;
@@ -46,12 +53,28 @@ export const Adjudge: Command = {
 
       // return missing options.
       if (!user || !channel_in || !url || !interaction.channel || !interaction.guild) {
-        content = 'error command missing some options.';
         await interaction.followUp({
           ephemeral: true,
-          content,
+          embeds: [embed.errorEmbed('Error', 'command missing some options.', [])],
         });
         return;
+      }
+
+      // play song.
+      const result = await metadata.query(url);
+      if (!result?.data || result.is_search) {
+        await interaction.followUp({
+          ephemeral: true,
+          embeds: [embed.errorEmbed('Error', 'query video not found.', [])],
+        });
+        return;
+      }
+
+      let item: metadata.PlayableItem;
+      if (Array.isArray(result.data)) {
+        item = result.data.shift() as metadata.PlayableItem;
+      } else {
+        item = result.data;
       }
 
       vote(client, interaction, members_count, 10000, async () => {
@@ -59,30 +82,18 @@ export const Adjudge: Command = {
         const member = await move(user, channel_in.id);
         await voice.join(channel_in);
 
-        // play song.
-        const result = await metadata.query(url);
-        if (!result?.data) {
-          content = 'query video not found';
-          await interaction.followUp({
-            ephemeral: true,
-            content,
-          });
-          return;
-        }
-        if (!result.is_search) {
-          let item: metadata.PlayableItem | undefined;
-          if (Array.isArray(result.data)) {
-            item = result.data.shift();
-          } else {
-            item = result.data;
-          }
-          await player.play(item);
-        }
+        await player.play(item);
       });
 
       await interaction.followUp({
         ephemeral: true,
-        content,
+        embeds: [
+          embed.createEmbed('/Adjudge Success', 'send someone to JUDGE.', [
+            { name: 'user', value: user.user.username },
+            { name: 'to channel', value: channel_in.name },
+            { name: 'lesson', value: item.title },
+          ]),
+        ],
       });
     } catch (error) {
       console.error('Error:', error);
