@@ -1,9 +1,11 @@
 import * as Discord from 'discord.js';
 import { Command } from '../command';
+import { choice } from '../services/choice';
 import * as voice from '../services/voice';
 import * as player from '../services/player';
 import * as queue from '../services/queue';
 import * as metadata from '../services/metadata';
+import * as embed from '../services/embed';
 
 export const Play: Command = {
   name: 'play',
@@ -23,10 +25,9 @@ export const Play: Command = {
       // user that use command
       const commander: any = interaction.member;
       if (!commander?.voice.channel || !interaction.guild) {
-        content = 'You must be in a voice channel to use this command.';
-        return await interaction.followUp({
+        await interaction.followUp({
           ephemeral: true,
-          content,
+          embeds: [embed.errorEmbed('Error', 'you need to in voice channel to use this command.', [])],
         });
       }
 
@@ -42,33 +43,45 @@ export const Play: Command = {
         content = 'query video not found';
         await interaction.followUp({
           ephemeral: true,
-          content,
+          embeds: [embed.errorEmbed('query video not found', `${query}`, [])],
         });
         return;
       }
 
+      let item: metadata.PlayableItem | metadata.PlayableItem[] | undefined;
+      // is search
       if (result.is_search) {
-        content = `is search result(s)`;
-        // TODO add search result vote top 5 result.
+        const choices_item = result.data.map((item, index) => {
+          return { name: `${index + 1}`, value: item.title };
+        });
+        const index_choice = await choice(client, interaction, choices_item, 10000);
+        item = result.data[index_choice];
       } else {
-        if (queue.list().length === 0 && player.getCurrentItem() === undefined) {
-          let item: metadata.PlayableItem | undefined;
-          if (Array.isArray(result.data)) {
-            item = result.data.shift();
-            queue.enqueue(result.data);
-          } else {
-            item = result.data;
-          }
-          await player.play(item);
+        item = result.data;
+      }
+
+      if (queue.list().length === 0 && player.getCurrentItem() === undefined) {
+        if (Array.isArray(item)) {
+          player.play(item.shift());
+          queue.enqueue(item);
         } else {
-          queue.enqueue(result.data);
+          await player.play(item);
         }
-        content = `add to queue`;
+      } else {
+        queue.enqueue(item);
       }
 
       await interaction.followUp({
         ephemeral: true,
-        content,
+        embeds: [
+          embed.createEmbed(
+            'Add song to queue',
+            `add song ${result.data[0].title} ${
+              result.data.length > 1 && !result.is_search ? `and ${result.data.length} songs.` : ''
+            }`,
+            [],
+          ),
+        ],
       });
     } catch (error) {
       console.error(error);

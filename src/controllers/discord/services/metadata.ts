@@ -22,7 +22,7 @@ export async function query(value: string) {
   }
 }
 
-export async function getInfoFromUrl(url: string): Promise<PlayableItem | PlayableItem[] | undefined> {
+export async function getInfoFromUrl(url: string): Promise<PlayableItem[] | undefined> {
   try {
     if (url.includes('youtube.com')) {
       if (url.includes('list=')) {
@@ -42,7 +42,7 @@ export async function getInfoFromUrl(url: string): Promise<PlayableItem | Playab
           title: videoInfo.video_details.title as string,
           url: url,
         };
-        return PlayableItem;
+        return [PlayableItem];
       }
     }
     return undefined;
