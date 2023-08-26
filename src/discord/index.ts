@@ -1,5 +1,5 @@
 import { CommandInteraction, Client, Interaction } from 'discord.js';
-import { Commands } from './commands';
+import { Commands } from '../commands/';
 
 export async function init(client: Client): Promise<void> {
   ready(client);

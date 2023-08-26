@@ -1,5 +1,6 @@
 import * as Discord from 'discord.js';
-import { Command } from '../command';
+import { Command } from '../discord/command';
+
 import { vote } from '../services/vote';
 import { move } from '../services/move';
 

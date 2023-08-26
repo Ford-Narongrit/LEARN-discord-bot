@@ -1,5 +1,3 @@
-import app from './app';
-
-app.listen(3000, () => {
-  console.log(`Server is running in http://localhost:3000`);
-});
+import discord from './discord/discord';
+import { init } from './discord';
+init(discord);

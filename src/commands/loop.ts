@@ -1,6 +1,7 @@
 import * as Discord from 'discord.js';
 import * as queue from '../services/queue';
-import { Command } from '../command';
+import { Command } from '../discord/command';
+
 import * as embed from '../services/embed';
 
 export const Loop: Command = {

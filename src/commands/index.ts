@@ -1,4 +1,4 @@
-import { Command } from '../command';
+import { Command } from '../discord/command';
 import { Hello } from './hello';
 import { Wake } from './wake';
 

@@ -1,5 +1,6 @@
 import * as Discord from 'discord.js';
-import { Command } from '../command';
+import { Command } from '../discord/command';
+
 import * as player from '../services/player';
 import * as embed from '../services/embed';
 

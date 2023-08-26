@@ -1,5 +1,6 @@
 import * as Discord from 'discord.js';
-import { Command } from '../command';
+import { Command } from '../discord/command';
+
 import * as queue from '../services/queue';
 import * as embed from '../services/embed';
 

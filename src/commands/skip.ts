@@ -2,7 +2,7 @@ import * as Discord from 'discord.js';
 import * as queue from '../services/queue';
 import * as voice from '../services/voice';
 import * as player from '../services/player';
-import { Command } from '../command';
+import { Command } from '../discord/command';
 
 export const Skip: Command = {
   name: 'skip',

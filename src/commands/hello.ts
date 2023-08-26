@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { Command } from '../command';
+import { Command } from '../discord/command';
 import { createEmbed } from '../services/embed';
 
 export const Hello: Command = {
