@@ -57,7 +57,7 @@ export const Play: Command = {
         const index_choice = await choice(client, interaction, choices_item, 10000);
         item = result.data[index_choice];
       } else {
-        item = result.data;
+        item = [...result.data];
       }
 
       if (queue.list().length === 0 && player.getCurrentItem() === undefined) {

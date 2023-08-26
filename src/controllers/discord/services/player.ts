@@ -17,12 +17,11 @@ export function init() {
 
   // add listener
   discordPlayer.on(AudioPlayerStatus.Idle, async () => {
+    currentItem = undefined;
     if (repeat) {
       await play(currentItem);
     } else if (!loading) {
       await play(dequeue());
-    } else {
-      currentItem = undefined;
     }
   });
   return discordPlayer;

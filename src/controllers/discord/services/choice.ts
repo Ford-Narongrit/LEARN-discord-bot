@@ -36,7 +36,7 @@ export async function choice(
       });
 
       collector.on('end', async () => {
-        message.edit(`you choose ${collectedReaction?.emoji.name}`);
+        message.edit(`you choose ${collectedReaction?.emoji.name ?? '1️⃣'}`);
         resolve(emojiIndex);
       });
     });
