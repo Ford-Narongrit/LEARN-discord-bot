@@ -7,6 +7,15 @@ import { Command } from '../command';
 export const Skip: Command = {
   name: 'skip',
   description: 'skip to next tack in queue',
+  options: [
+    {
+      name: 'to',
+      description: 'track number in queue',
+      type: Discord.ApplicationCommandOptionType.Integer,
+      required: false,
+      min_value: 1,
+    },
+  ],
   run: async (client: Discord.Client, interaction: Discord.CommandInteraction) => {
     let content = 'skip command';
     // user that use command
@@ -22,7 +31,17 @@ export const Skip: Command = {
     // join voice channel.
     await voice.join(commander.voice.channel);
 
-    const item = queue.dequeue();
+    const index_to_skip = interaction.options.get('to')?.value as number;
+
+    if (index_to_skip < 1 || index_to_skip > queue.list().length) {
+      content = 'Invalid track number.';
+      return await interaction.followUp({
+        ephemeral: true,
+        content,
+      });
+    }
+
+    const item = queue.dequeue(index_to_skip ? index_to_skip : 1);
     if (item) {
       content = `Playing **${item.title}**`;
       await player.play(item);

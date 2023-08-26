@@ -9,18 +9,18 @@ export function enqueue(item: PlayableItem | PlayableItem[]) {
   } else {
     queue.push(item);
   }
-  console.log('queue', queue);
 }
 
-export function dequeue() {
-  const index = random ? Math.floor(Math.random() * queue.length) : 0;
-  const item = queue.splice(index, 1)[0];
+export function dequeue(to_index: number = 1) {
+  const item = queue.splice(0, to_index);
+
   if (item) {
-    console.log('removed from queue', item);
     if (loop) {
-      queue.push(item);
+      queue.push(...item);
     }
-    return item;
+    console.log('queue', item[to_index - 1]);
+
+    return item[to_index - 1];
   }
 }
 
