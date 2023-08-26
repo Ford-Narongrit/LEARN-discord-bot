@@ -1,11 +1,11 @@
 {
-  "name": "typescript",
+  "name": "just-a-discord-bot",
   "version": "1.0.0",
   "description": "this project for learn to set standard structure of node project",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/app.ts",
-    "start": "node dist/app.js",
+    "dev": "nodemon src/index.ts",
+    "start": "node dist/index.js",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,12 +13,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "prettier": "^3.0.1"
+    "@discordjs/voice": "^0.16.0",
+    "discord.js": "^14.12.1",
+    "dotenv": "^16.3.1",
+    "ffmpeg-static": "^5.1.0",
+    "play-dl": "^1.9.6",
+    "prettier": "^3.0.1",
+    "tweetnacl": "^1.0.3",
+    "yt-search": "^2.10.4",
+    "ytpl": "^2.3.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.17",
     "@types/node": "^20.4.9",
+    "@types/yt-search": "^2.3.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }
